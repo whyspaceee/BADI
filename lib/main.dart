@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:sports_buddy/sign_up_page.dart';
 import '/authenticator.dart';
 import 'package:provider/provider.dart';
 import 'firebase_options.dart';
@@ -32,7 +33,12 @@ class MyApp extends StatelessWidget {
             backgroundColor: Colors.white,
             textTheme: GoogleFonts.poppinsTextTheme(),
           ),
-          home: AuthenticationWrapper(),
+          initialRoute: '/authWrapper',
+          routes: {
+            '/mainMenu': (context) => const MainMenu(),
+            '/authWrapper': (context) => const AuthenticationWrapper(),
+            '/signUp': (context) => const SignUpPage(),
+          },
         ));
   }
 }
