@@ -6,6 +6,7 @@ import '/authenticator.dart';
 import 'package:provider/provider.dart';
 import 'firebase_options.dart';
 import './sign_in_page.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class SignUpPage extends StatefulWidget {
   const SignUpPage({Key? key}) : super(key: key);
@@ -18,6 +19,7 @@ class _SignUpPageState extends State<SignUpPage> {
   @override
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passController = TextEditingController();
+  final firebaseInstance = FirebaseFirestore.instance;
   bool errorMessage = false;
   Future signUp() async {
     var message = await context.read<AuthService>().signUp(
@@ -85,10 +87,15 @@ class _SignUpPageState extends State<SignUpPage> {
             onTap: () async {
               FocusManager.instance.primaryFocus?.unfocus();
               await signUp();
+              final user = Provider.of<User?>(context, listen: false);
               if (errorMessage == false) {
                 ScaffoldMessenger.of(context).showSnackBar(invalidEmailorPass);
               } else {
-                Navigator.pushNamed(context, '/authWrapper');
+                await firebaseInstance
+                    .collection('User')
+                    .doc(user!.uid)
+                    .set({'uid': user!.uid});
+                await Navigator.pushNamed(context, '/authWrapper');
               }
             },
             borderRadius: BorderRadius.all(Radius.circular(50)),
