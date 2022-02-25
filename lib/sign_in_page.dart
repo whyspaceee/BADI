@@ -82,6 +82,7 @@ class _SignInPageState extends State<SignInPage> {
               SizedBox(height: 25),
               InkWell(
                 onTap: () async {
+                  FocusManager.instance.primaryFocus?.unfocus();
                   await logIn();
                   if (errorMessage == false) {
                     ScaffoldMessenger.of(context)
@@ -111,7 +112,7 @@ class _SignInPageState extends State<SignInPage> {
               SizedBox(
                 height: 15,
               ),
-              InkWell(
+              GestureDetector(
                 child: Text("Sign up"),
                 onTap: () => {Navigator.pushNamed(context, '/signUp')},
               )

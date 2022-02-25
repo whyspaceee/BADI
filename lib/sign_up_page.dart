@@ -83,6 +83,7 @@ class _SignUpPageState extends State<SignUpPage> {
           SizedBox(height: 25),
           InkWell(
             onTap: () async {
+              FocusManager.instance.primaryFocus?.unfocus();
               await signUp();
               if (errorMessage == false) {
                 ScaffoldMessenger.of(context).showSnackBar(invalidEmailorPass);
