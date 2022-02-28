@@ -7,6 +7,8 @@ import 'package:provider/provider.dart';
 import 'firebase_options.dart';
 import './sign_in_page.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter_firebase_chat_core/flutter_firebase_chat_core.dart';
+import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 
 class SignUpPage extends StatefulWidget {
   const SignUpPage({Key? key}) : super(key: key);
@@ -91,10 +93,12 @@ class _SignUpPageState extends State<SignUpPage> {
               if (errorMessage == false) {
                 ScaffoldMessenger.of(context).showSnackBar(invalidEmailorPass);
               } else {
+                await FirebaseChatCore.instance
+                    .createUserInFirestore(types.User(id: user!.uid));
                 await firebaseInstance
-                    .collection('User')
-                    .doc(user!.uid)
-                    .set({'uid': user!.uid});
+                    .collection('users')
+                    .doc(user.uid)
+                    .set({'uid': user.uid});
                 await Navigator.pushNamed(context, '/authWrapper');
               }
             },
