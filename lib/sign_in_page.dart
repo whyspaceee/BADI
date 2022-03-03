@@ -27,7 +27,6 @@ class _SignInPageState extends State<SignInPage> {
   Widget build(BuildContext context) {
     const invalidEmailorPass =
         SnackBar(content: Text("Invalid email or password"));
-    final firebaseUser = context.watch<User?>();
     return Scaffold(
         resizeToAvoidBottomInset: false,
         body: Container(

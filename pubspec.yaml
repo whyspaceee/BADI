@@ -40,6 +40,7 @@ dependencies:
   google_fonts: ^2.3.1
   cloud_firestore: ^3.1.10
   flutter_firebase_chat_core: ^1.5.2
+  image_picker: ^0.8.4+10
 
 dev_dependencies:
   flutter_test:

@@ -22,13 +22,30 @@ class _SignUpPageState extends State<SignUpPage> {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passController = TextEditingController();
   final firebaseInstance = FirebaseFirestore.instance;
+
   bool errorMessage = false;
+
   Future signUp() async {
     var message = await context.read<AuthService>().signUp(
         email: emailController.text.trim(),
         password: passController.text.trim());
 
     errorMessage = message;
+  }
+
+  Future createAccount(User user) async {
+    try {
+      await FirebaseChatCore.instance
+          .createUserInFirestore(types.User(id: user.uid));
+      await firebaseInstance
+          .collection('users')
+          .doc(user.uid)
+          .update({'uid': user.uid});
+      await Navigator.pushNamed(context, '/profileSetup');
+    } on FirebaseException catch (e) {
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text(e.message!)));
+    }
   }
 
   Widget build(BuildContext context) {
@@ -93,13 +110,7 @@ class _SignUpPageState extends State<SignUpPage> {
               if (errorMessage == false) {
                 ScaffoldMessenger.of(context).showSnackBar(invalidEmailorPass);
               } else {
-                await FirebaseChatCore.instance
-                    .createUserInFirestore(types.User(id: user!.uid));
-                await firebaseInstance
-                    .collection('users')
-                    .doc(user.uid)
-                    .set({'uid': user.uid});
-                await Navigator.pushNamed(context, '/authWrapper');
+                createAccount(user!);
               }
             },
             borderRadius: BorderRadius.all(Radius.circular(50)),

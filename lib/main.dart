@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:sports_buddy/profile_setup_page.dart';
 import 'package:sports_buddy/sign_up_page.dart';
 import '/authenticator.dart';
 import 'package:provider/provider.dart';
@@ -38,6 +39,7 @@ class MyApp extends StatelessWidget {
             '/mainMenu': (context) => const MainMenu(),
             '/authWrapper': (context) => const AuthenticationWrapper(),
             '/signUp': (context) => const SignUpPage(),
+            '/profileSetup': (context) => const ProfileSetupPage(),
           },
         ));
   }
@@ -50,7 +52,7 @@ class AuthenticationWrapper extends StatelessWidget {
   Widget build(BuildContext context) {
     final firebaseUser = context.watch<User?>();
     if (firebaseUser != null) {
-      return MainMenu();
+      return ProfileSetupPage();
     } else {
       return SignInPage();
     }
