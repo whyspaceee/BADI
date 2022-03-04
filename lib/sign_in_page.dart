@@ -16,14 +16,6 @@ class _SignInPageState extends State<SignInPage> {
   final TextEditingController passController = TextEditingController();
   var errorMessage = false;
 
-  Future logIn() async {
-    var message = await context.read<AuthService>().signIn(
-        email: emailController.text.trim(),
-        password: passController.text.trim());
-
-    errorMessage = message;
-  }
-
   Widget build(BuildContext context) {
     const invalidEmailorPass =
         SnackBar(content: Text("Invalid email or password"));
@@ -82,10 +74,13 @@ class _SignInPageState extends State<SignInPage> {
               InkWell(
                 onTap: () async {
                   FocusManager.instance.primaryFocus?.unfocus();
-                  await logIn();
-                  if (errorMessage == false) {
+                  try {
+                    await context.read<AuthService>().signIn(
+                        email: emailController.text.trim(),
+                        password: passController.text.trim());
+                  } on FirebaseAuthException catch (e) {
                     ScaffoldMessenger.of(context)
-                        .showSnackBar(invalidEmailorPass);
+                        .showSnackBar(SnackBar(content: Text(e.message!)));
                   }
                 },
                 borderRadius: BorderRadius.all(Radius.circular(50)),

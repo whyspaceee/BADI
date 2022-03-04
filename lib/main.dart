@@ -34,7 +34,7 @@ class MyApp extends StatelessWidget {
             backgroundColor: Colors.white,
             textTheme: GoogleFonts.poppinsTextTheme(),
           ),
-          initialRoute: '/authWrapper',
+          home: AuthenticationWrapper(),
           routes: {
             '/mainMenu': (context) => const MainMenu(),
             '/authWrapper': (context) => const AuthenticationWrapper(),

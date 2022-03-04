@@ -23,16 +23,6 @@ class _SignUpPageState extends State<SignUpPage> {
   final TextEditingController passController = TextEditingController();
   final firebaseInstance = FirebaseFirestore.instance;
 
-  bool errorMessage = false;
-
-  Future signUp() async {
-    var message = await context.read<AuthService>().signUp(
-        email: emailController.text.trim(),
-        password: passController.text.trim());
-
-    errorMessage = message;
-  }
-
   Future createAccount(User user) async {
     try {
       await FirebaseChatCore.instance
@@ -105,13 +95,16 @@ class _SignUpPageState extends State<SignUpPage> {
           InkWell(
             onTap: () async {
               FocusManager.instance.primaryFocus?.unfocus();
-              await signUp();
-              final user = Provider.of<User?>(context, listen: false);
-              if (errorMessage == false) {
-                ScaffoldMessenger.of(context).showSnackBar(invalidEmailorPass);
-              } else {
-                createAccount(user!);
+              try {
+                await context.read<AuthService>().signUp(
+                    email: emailController.text.trim(),
+                    password: passController.text.trim());
+              } on FirebaseAuthException catch (e) {
+                ScaffoldMessenger.of(context)
+                    .showSnackBar(SnackBar(content: Text(e.message!)));
               }
+              final user = Provider.of<User?>(context, listen: false);
+              if (user != null) createAccount(user);
             },
             borderRadius: BorderRadius.all(Radius.circular(50)),
             child: Container(

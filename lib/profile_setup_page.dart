@@ -92,7 +92,10 @@ class _ProfileSetupPageState extends State<ProfileSetupPage> {
           ),
           RaisedButton(
             child: Text("Sign Out"),
-            onPressed: () => {context.read<AuthService>().signOut()},
+            onPressed: () => {
+              context.read<AuthService>().signOut(),
+              Navigator.popUntil(context, ModalRoute.withName('/'))
+            },
           ),
         ],
       ),
