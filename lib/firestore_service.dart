@@ -23,12 +23,16 @@ class FirestoreService {
         .createUserInFirestore(types.User(id: user.uid));
     await _firebaseFirestore.collection('users').doc(user.uid).update({
       'uid': user.uid,
-      'imageURL':
+      'imageUrl':
           'https://firebasestorage.googleapis.com/v0/b/sportsbuddy-fd199.appspot.com/o/profilepicture%2Fdefault.png?alt=media&token=bac098fc-762f-4bb4-9a45-f6fecf554607'
     });
   }
 
   Future<DocumentSnapshot> getUserDocument({required User user}) async {
     return await _firebaseFirestore.collection('users').doc(user.uid).get();
+  }
+
+  Future<DocumentReference> getUserReference({required User user}) async {
+    return await _firebaseFirestore.collection('users').doc(user.uid);
   }
 }

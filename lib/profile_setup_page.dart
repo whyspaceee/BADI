@@ -23,10 +23,21 @@ class _ProfileSetupPageState extends State<ProfileSetupPage> {
   final TextEditingController lastNameController = TextEditingController();
   String networkprofileImage =
       'https://firebasestorage.googleapis.com/v0/b/sportsbuddy-fd199.appspot.com/o/profilepicture%2Fdefault.png?alt=media&token=bac098fc-762f-4bb4-9a45-f6fecf554607';
+  void setProfileImage(User user) async {
+    DocumentSnapshot documentSnapshot =
+        await context.read<FirestoreService>().getUserDocument(user: user);
+    final ImageURL = await documentSnapshot['imageUrl'];
+    if (mounted && ImageURL != null)
+      setState(() {
+        networkprofileImage = ImageURL;
+      });
+  }
+
   @override
   Widget build(BuildContext context) {
     User user = Provider.of<User>(context, listen: false);
     Size size = MediaQuery.of(context).size;
+    setProfileImage(user);
     return Scaffold(
         //IMPORTANT!!! THIS SHOULD BE MADE INTO A FUTURE BUILDER
         body: SingleChildScrollView(
@@ -54,6 +65,10 @@ class _ProfileSetupPageState extends State<ProfileSetupPage> {
                     final temporaryURL = await context
                         .read<StorageService>()
                         .getProfilePhoto(user.uid);
+                    final DocumentReference docRef = await context
+                        .read<FirestoreService>()
+                        .getUserReference(user: user);
+                    docRef.set({'imageUrl': temporaryURL});
                     setState(() {
                       networkprofileImage = temporaryURL;
                     });
@@ -107,7 +122,7 @@ class _ProfileSetupPageState extends State<ProfileSetupPage> {
                   borderRadius: BorderRadius.all(Radius.circular(50))),
               child: Center(
                 child: Text(
-                  "Create Account",
+                  "Save Changes",
                   style: TextStyle(color: Colors.white),
                 ),
               ),
