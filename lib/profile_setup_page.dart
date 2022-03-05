@@ -1,11 +1,9 @@
 import 'dart:io';
 
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:sports_buddy/firestore_service.dart';
 import 'package:sports_buddy/storage_service.dart';
 import './authenticator.dart';
@@ -28,7 +26,7 @@ class _ProfileSetupPageState extends State<ProfileSetupPage> {
     return Scaffold(
         body: SingleChildScrollView(
       padding: EdgeInsets.all(25),
-      child: ListView(
+      child: Column(
         children: [
           Container(
             height: size.width / 4,
