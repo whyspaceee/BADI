@@ -1,2 +1,2 @@
 # WIP
-An app to find sports partners near you
+An app to find sport partners near you

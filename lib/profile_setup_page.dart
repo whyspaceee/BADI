@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -7,6 +8,8 @@ import 'package:provider/provider.dart';
 import 'package:sports_buddy/firestore_service.dart';
 import 'package:sports_buddy/storage_service.dart';
 import './authenticator.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:image_cropper/image_cropper.dart';
 
 class ProfileSetupPage extends StatefulWidget {
   const ProfileSetupPage({Key? key}) : super(key: key);
@@ -18,34 +21,45 @@ class ProfileSetupPage extends StatefulWidget {
 class _ProfileSetupPageState extends State<ProfileSetupPage> {
   final TextEditingController firstNameController = TextEditingController();
   final TextEditingController lastNameController = TextEditingController();
-  File? profileImage;
+  String networkprofileImage =
+      'https://firebasestorage.googleapis.com/v0/b/sportsbuddy-fd199.appspot.com/o/profilepicture%2Fdefault.png?alt=media&token=bac098fc-762f-4bb4-9a45-f6fecf554607';
   @override
   Widget build(BuildContext context) {
     User user = Provider.of<User>(context, listen: false);
     Size size = MediaQuery.of(context).size;
     return Scaffold(
+        //IMPORTANT!!! THIS SHOULD BE MADE INTO A FUTURE BUILDER
         body: SingleChildScrollView(
       padding: EdgeInsets.all(25),
       child: Column(
         children: [
           Container(
-            height: size.width / 4,
-            width: size.width / 4,
-            child: CircleAvatar(
-              backgroundColor: Colors.white,
-              child: GestureDetector(
-                onTap: () async {
-                  final image = await ImagePicker()
-                      .pickImage(source: ImageSource.gallery);
-                  if (image == null) return;
-                  final imageTemporary = File(image.path);
-                  setState(() {
-                    profileImage = imageTemporary;
-                  });
-                },
-              ),
-            ),
-          ),
+              height: size.width / 4,
+              width: size.width / 4,
+              child: CircleAvatar(
+                backgroundImage: NetworkImage(networkprofileImage),
+                backgroundColor: Colors.black26,
+                child: GestureDetector(
+                  onTap: () async {
+                    final image = await ImagePicker()
+                        .pickImage(source: ImageSource.gallery);
+                    if (image == null) return;
+                    final croppedImage =
+                        await ImageCropper().cropImage(sourcePath: image.path);
+                    if (croppedImage == null) return;
+                    final imageTemporary = File(croppedImage.path);
+                    await context
+                        .read<StorageService>()
+                        .uploadProfilePhoto(user.uid, imageTemporary.path);
+                    final temporaryURL = await context
+                        .read<StorageService>()
+                        .getProfilePhoto(user.uid);
+                    setState(() {
+                      networkprofileImage = temporaryURL;
+                    });
+                  },
+                ),
+              )),
           SizedBox(height: 15),
           Container(
               padding: (EdgeInsets.symmetric(horizontal: 20, vertical: 5)),
@@ -74,16 +88,12 @@ class _ProfileSetupPageState extends State<ProfileSetupPage> {
           InkWell(
             onTap: () async {
               if (firstNameController.text != "" &&
-                  lastNameController.text != "" &&
-                  profileImage != null) {
+                  lastNameController.text != "") {
                 FocusManager.instance.primaryFocus?.unfocus();
                 await context.read<FirestoreService>().saveName(
                     firstName: firstNameController.text,
                     lastName: lastNameController.text,
                     user: user);
-                await context
-                    .read<StorageService>()
-                    .uploadProfilePhoto(user.uid, profileImage!.path);
               } else {
                 ScaffoldMessenger.of(context)
                     .showSnackBar(SnackBar(content: Text("Empty")));
