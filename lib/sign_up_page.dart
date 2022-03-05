@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:sports_buddy/firestore_service.dart';
 import '/authenticator.dart';
 import 'package:provider/provider.dart';
 import 'firebase_options.dart';
@@ -21,22 +22,6 @@ class _SignUpPageState extends State<SignUpPage> {
   @override
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passController = TextEditingController();
-  final firebaseInstance = FirebaseFirestore.instance;
-
-  Future createAccount(User user) async {
-    try {
-      await FirebaseChatCore.instance
-          .createUserInFirestore(types.User(id: user.uid));
-      await firebaseInstance
-          .collection('users')
-          .doc(user.uid)
-          .update({'uid': user.uid});
-      await Navigator.pushNamed(context, '/profileSetup');
-    } on FirebaseException catch (e) {
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text(e.message!)));
-    }
-  }
 
   Widget build(BuildContext context) {
     const invalidEmailorPass =
@@ -104,7 +89,12 @@ class _SignUpPageState extends State<SignUpPage> {
                     .showSnackBar(SnackBar(content: Text(e.message!)));
               }
               final user = Provider.of<User?>(context, listen: false);
-              if (user != null) createAccount(user);
+              if (user != null) {
+                await context
+                    .read<FirestoreService>()
+                    .createAccount(user: user);
+                Navigator.pushNamed(context, '/profileSetup');
+              }
             },
             borderRadius: BorderRadius.all(Radius.circular(50)),
             child: Container(

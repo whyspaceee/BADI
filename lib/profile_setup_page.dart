@@ -1,8 +1,13 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:sports_buddy/firestore_service.dart';
+import 'package:sports_buddy/storage_service.dart';
 import './authenticator.dart';
 
 class ProfileSetupPage extends StatefulWidget {
@@ -15,6 +20,7 @@ class ProfileSetupPage extends StatefulWidget {
 class _ProfileSetupPageState extends State<ProfileSetupPage> {
   final TextEditingController firstNameController = TextEditingController();
   final TextEditingController lastNameController = TextEditingController();
+  File? profileImage;
   @override
   Widget build(BuildContext context) {
     User user = Provider.of<User>(context, listen: false);
@@ -22,7 +28,7 @@ class _ProfileSetupPageState extends State<ProfileSetupPage> {
     return Scaffold(
         body: SingleChildScrollView(
       padding: EdgeInsets.all(25),
-      child: Column(
+      child: ListView(
         children: [
           Container(
             height: size.width / 4,
@@ -30,7 +36,15 @@ class _ProfileSetupPageState extends State<ProfileSetupPage> {
             child: CircleAvatar(
               backgroundColor: Colors.white,
               child: GestureDetector(
-                onTap: () => {},
+                onTap: () async {
+                  final image = await ImagePicker()
+                      .pickImage(source: ImageSource.gallery);
+                  if (image == null) return;
+                  final imageTemporary = File(image.path);
+                  setState(() {
+                    profileImage = imageTemporary;
+                  });
+                },
               ),
             ),
           ),
@@ -62,15 +76,16 @@ class _ProfileSetupPageState extends State<ProfileSetupPage> {
           InkWell(
             onTap: () async {
               if (firstNameController.text != "" &&
-                  lastNameController.text != "") {
+                  lastNameController.text != "" &&
+                  profileImage != null) {
                 FocusManager.instance.primaryFocus?.unfocus();
-                await FirebaseFirestore.instance
-                    .collection('users')
-                    .doc(user.uid)
-                    .update({
-                  'firstName': firstNameController.text,
-                  'lastName': lastNameController.text,
-                });
+                await context.read<FirestoreService>().saveName(
+                    firstName: firstNameController.text,
+                    lastName: lastNameController.text,
+                    user: user);
+                await context
+                    .read<StorageService>()
+                    .uploadProfilePhoto(user.uid, profileImage!.path);
               } else {
                 ScaffoldMessenger.of(context)
                     .showSnackBar(SnackBar(content: Text("Empty")));

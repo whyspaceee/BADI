@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -8,6 +9,7 @@ import '/authenticator.dart';
 import 'package:provider/provider.dart';
 import 'firebase_options.dart';
 import './sign_in_page.dart';
+import './firestore_service.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -27,7 +29,9 @@ class MyApp extends StatelessWidget {
           ),
           StreamProvider(
               create: (context) => context.read<AuthService>().authStateChanges,
-              initialData: null)
+              initialData: null),
+          Provider<FirestoreService>(
+              create: (_) => FirestoreService(FirebaseFirestore.instance))
         ],
         child: MaterialApp(
           theme: ThemeData(
