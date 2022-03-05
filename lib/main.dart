@@ -1,10 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:sports_buddy/profile_setup_page.dart';
 import 'package:sports_buddy/sign_up_page.dart';
+import 'package:sports_buddy/storage_service.dart';
 import '/authenticator.dart';
 import 'package:provider/provider.dart';
 import 'firebase_options.dart';
@@ -31,7 +33,9 @@ class MyApp extends StatelessWidget {
               create: (context) => context.read<AuthService>().authStateChanges,
               initialData: null),
           Provider<FirestoreService>(
-              create: (_) => FirestoreService(FirebaseFirestore.instance))
+              create: (_) => FirestoreService(FirebaseFirestore.instance)),
+          Provider<StorageService>(
+              create: (_) => StorageService(FirebaseStorage.instance))
         ],
         child: MaterialApp(
           theme: ThemeData(
