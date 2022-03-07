@@ -1,6 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 
-class AuthService {
+class AuthService {//class to handle authentication
   final FirebaseAuth _firebaseAuth;
 
   AuthService(this._firebaseAuth);

@@ -55,22 +55,29 @@ class _ProfileSetupPageState extends State<ProfileSetupPage> {
                                 .cropImage(sourcePath: image.path);
                             if (croppedImage == null) return;
                             final imageTemporary = File(croppedImage.path);
-                            await context
-                                .read<StorageService>()
-                                .uploadProfilePhoto(
-                                    user.uid, imageTemporary.path);
-                            final temporaryURL = await context
-                                .read<StorageService>()
-                                .getProfilePhoto(user.uid);
-                            final DocumentReference docRef = await context
-                                .read<FirestoreService>()
-                                .getUserReference(user: user);
-                            docRef.set({'imageUrl': temporaryURL});
+                            try {
+                              await context
+                                  .read<StorageService>()
+                                  .uploadProfilePhoto(
+                                      user.uid, imageTemporary.path);
+                              final temporaryURL = await context
+                                  .read<StorageService>()
+                                  .getProfilePhoto(user.uid);
+                              final DocumentReference docRef = await context
+                                  .read<FirestoreService>()
+                                  .getUserReference(user: user);
+                              docRef.update({'imageUrl': temporaryURL});
+                            } on FirebaseException catch (e) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(content: Text(e.toString())));
+                            }
                           },
                         ),
                       );
                     } else
-                      return CircularProgressIndicator();
+                      return CircularProgressIndicator(
+                        color: Colors.black12,
+                      );
                   })),
           SizedBox(height: 15),
           Container(

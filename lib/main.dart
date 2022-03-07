@@ -26,6 +26,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
         providers: [
+          //providers to handle state management
           Provider<AuthService>(
             create: (_) => AuthService(FirebaseAuth.instance),
           ),
@@ -53,6 +54,7 @@ class MyApp extends StatelessWidget {
   }
 }
 
+//wrapper to determine if the user is logged in or not
 class AuthenticationWrapper extends StatelessWidget {
   const AuthenticationWrapper({Key? key}) : super(key: key);
 
