@@ -4,6 +4,11 @@
         android:label="sports_buddy"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
+        <meta-data
+              android:name="com.google.android.geo.API_KEY"
+              android:value="AIzaSyDHrPqIHTDfFTRc-4JBAUQ8pqL7r2haaRo"
+            />
+
         <activity
             android:name=".MainActivity"
             android:exported="true"
@@ -19,7 +24,7 @@
             <meta-data
               android:name="io.flutter.embedding.android.NormalTheme"
               android:resource="@style/NormalTheme"
-              />
+            />
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>

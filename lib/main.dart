@@ -1,9 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:sports_buddy/maps_page.dart';
 import 'package:sports_buddy/profile_setup_page.dart';
 import 'package:sports_buddy/sign_up_page.dart';
 import 'package:sports_buddy/storage_service.dart';
@@ -12,6 +14,7 @@ import 'package:provider/provider.dart';
 import 'firebase_options.dart';
 import './sign_in_page.dart';
 import './firestore_service.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -24,6 +27,9 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if (defaultTargetPlatform == TargetPlatform.android) {
+      AndroidGoogleMapsFlutter.useAndroidViewSurface = true;
+    }
     return MultiProvider(
         providers: [
           //providers to handle state management
@@ -44,7 +50,7 @@ class MyApp extends StatelessWidget {
             textTheme: GoogleFonts.poppinsTextTheme(),
           ),
           //routes for navigation
-          home: AuthenticationWrapper(),
+          home: NearbySports(),
           routes: {
             '/mainMenu': (context) => const MainMenu(),
             '/authWrapper': (context) => const AuthenticationWrapper(),
