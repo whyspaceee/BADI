@@ -71,6 +71,7 @@ class _SignUpPageState extends State<SignUpPage> {
           ),
           SizedBox(height: 25),
           InkWell(
+            //uses the provider to sign up using the AuthService class,
             onTap: () async {
               FocusManager.instance.primaryFocus?.unfocus();
               try {
@@ -81,7 +82,9 @@ class _SignUpPageState extends State<SignUpPage> {
                 ScaffoldMessenger.of(context)
                     .showSnackBar(SnackBar(content: Text(e.message!)));
               }
+              //gets the user class from the Stream Provider
               final user = Provider.of<User?>(context, listen: false);
+              // if there is a user, call the createAccount function
               if (user != null) {
                 await context
                     .read<FirestoreService>()

@@ -13,7 +13,6 @@ class _SignInPageState extends State<SignInPage> {
   @override
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passController = TextEditingController();
-  var errorMessage = false;
 
   Widget build(BuildContext context) {
     const invalidEmailorPass =
@@ -34,6 +33,7 @@ class _SignInPageState extends State<SignInPage> {
                     style: TextStyle(fontSize: 30),
                   ))),
               SizedBox(height: 15),
+              //email and password form fields
               Container(
                   padding: (EdgeInsets.symmetric(horizontal: 20, vertical: 5)),
                   decoration: BoxDecoration(
@@ -71,6 +71,7 @@ class _SignInPageState extends State<SignInPage> {
               ),
               SizedBox(height: 25),
               InkWell(
+                //uses the provider to sign in using the AuthService class,
                 onTap: () async {
                   FocusManager.instance.primaryFocus?.unfocus();
                   try {
@@ -105,6 +106,7 @@ class _SignInPageState extends State<SignInPage> {
               SizedBox(
                 height: 15,
               ),
+              //navigates to the signup page
               GestureDetector(
                 child: Text("Sign up"),
                 onTap: () => {Navigator.pushNamed(context, '/signUp')},

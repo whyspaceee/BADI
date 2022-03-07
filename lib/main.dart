@@ -43,6 +43,7 @@ class MyApp extends StatelessWidget {
             backgroundColor: Colors.white,
             textTheme: GoogleFonts.poppinsTextTheme(),
           ),
+          //routes for navigation
           home: AuthenticationWrapper(),
           routes: {
             '/mainMenu': (context) => const MainMenu(),
@@ -54,7 +55,8 @@ class MyApp extends StatelessWidget {
   }
 }
 
-//wrapper to determine if the user is logged in or not
+//listens if the user is logged in or not.
+//if the user is not logged in, direct them to the sign in page
 class AuthenticationWrapper extends StatelessWidget {
   const AuthenticationWrapper({Key? key}) : super(key: key);
 
@@ -69,6 +71,7 @@ class AuthenticationWrapper extends StatelessWidget {
   }
 }
 
+//temporary main menu screen for testing
 class MainMenu extends StatefulWidget {
   const MainMenu({Key? key}) : super(key: key);
 

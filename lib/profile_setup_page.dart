@@ -21,6 +21,7 @@ class ProfileSetupPage extends StatefulWidget {
 class _ProfileSetupPageState extends State<ProfileSetupPage> {
   final TextEditingController firstNameController = TextEditingController();
   final TextEditingController lastNameController = TextEditingController();
+  //default profile photo
   String networkprofileImage =
       'https://firebasestorage.googleapis.com/v0/b/sportsbuddy-fd199.appspot.com/o/profilepicture%2Fdefault.png?alt=media&token=bac098fc-762f-4bb4-9a45-f6fecf554607';
 
@@ -36,17 +37,22 @@ class _ProfileSetupPageState extends State<ProfileSetupPage> {
           Container(
               height: size.width / 4,
               width: size.width / 4,
+              //streambuilder to build the profile photo,
               child: StreamBuilder(
+                  //gets the document of the user
                   stream: context
                       .read<FirestoreService>()
                       .getUserDocumentStream(user: user),
                   builder: (context, AsyncSnapshot<DocumentSnapshot> snapshot) {
+                    //if there is a connection to the snapshot,
+                    //set the network image to the user's imageUrl
                     if (snapshot.connectionState == ConnectionState.active) {
                       networkprofileImage = snapshot.data!['imageUrl'];
                       return CircleAvatar(
                         backgroundImage: NetworkImage(networkprofileImage),
                         backgroundColor: Colors.black26,
                         child: GestureDetector(
+                          //function to get, crop, and upload the profile photo
                           onTap: () async {
                             final image = await ImagePicker()
                                 .pickImage(source: ImageSource.gallery);
@@ -57,12 +63,16 @@ class _ProfileSetupPageState extends State<ProfileSetupPage> {
                             final imageTemporary = File(croppedImage.path);
                             try {
                               await context
+                                  //uploads the profile photo to storage
                                   .read<StorageService>()
                                   .uploadProfilePhoto(
                                       user.uid, imageTemporary.path);
+                              //gets the url for the uploaded photo
                               final temporaryURL = await context
                                   .read<StorageService>()
                                   .getProfilePhoto(user.uid);
+                              //gets the document reference of the user
+                              //sets the user's imageUrl to the url of the image uploaded to storage
                               final DocumentReference docRef = await context
                                   .read<FirestoreService>()
                                   .getUserReference(user: user);
@@ -109,6 +119,7 @@ class _ProfileSetupPageState extends State<ProfileSetupPage> {
               if (firstNameController.text != "" &&
                   lastNameController.text != "") {
                 FocusManager.instance.primaryFocus?.unfocus();
+                // save the profile to firestore database
                 await context.read<FirestoreService>().saveName(
                     firstName: firstNameController.text,
                     lastName: lastNameController.text,

@@ -4,12 +4,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_firebase_chat_core/flutter_firebase_chat_core.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 
-class FirestoreService { //class for accesing the firestore db
+//class for accesing the firestore db
+class FirestoreService {
   final FirebaseFirestore _firebaseFirestore;
 
   FirestoreService(this._firebaseFirestore);
-  
-  Future<void> saveName(//saves the name (should be changed into a function to set profile)
+
+  //saves the name (should be changed into a function to set profile not just names)
+  Future<void> saveName(
       {required String firstName,
       required String lastName,
       required User user}) async {
@@ -19,7 +21,8 @@ class FirestoreService { //class for accesing the firestore db
     });
   }
 
-  Future<void> createAccount({required User user}) async { //saves the user id and set default profile
+  //saves the user id and set default profile
+  Future<void> createAccount({required User user}) async {
     await FirebaseChatCore.instance
         .createUserInFirestore(types.User(id: user.uid));
     await _firebaseFirestore.collection('users').doc(user.uid).update({
@@ -29,15 +32,19 @@ class FirestoreService { //class for accesing the firestore db
     });
   }
 
-  Future<DocumentSnapshot> getUserDocument({required User user}) async {//get the user document
+  //returns the user document snapshot
+  Future<DocumentSnapshot> getUserDocument({required User user}) async {
     return await _firebaseFirestore.collection('users').doc(user.uid).get();
   }
 
-  Future<DocumentReference> getUserReference({required User user}) async {//get the user document reference
+  //get the user document reference
+  Future<DocumentReference> getUserReference({required User user}) async {
     return await _firebaseFirestore.collection('users').doc(user.uid);
   }
 
-  Stream<DocumentSnapshot> getUserDocumentStream({required User user}) {//get a stream of user document snapshots
+  //get a stream of user document snapshots
+  //useful for refreshing user profile pictures
+  Stream<DocumentSnapshot> getUserDocumentStream({required User user}) {
     return _firebaseFirestore.collection('users').doc(user.uid).snapshots();
   }
 }
