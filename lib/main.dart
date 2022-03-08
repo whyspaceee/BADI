@@ -50,7 +50,7 @@ class MyApp extends StatelessWidget {
             textTheme: GoogleFonts.poppinsTextTheme(),
           ),
           //routes for navigation
-          home: NearbySports(),
+          home: AuthenticationWrapper(),
           routes: {
             '/mainMenu': (context) => const MainMenu(),
             '/authWrapper': (context) => const AuthenticationWrapper(),
@@ -70,7 +70,7 @@ class AuthenticationWrapper extends StatelessWidget {
   Widget build(BuildContext context) {
     final firebaseUser = context.watch<User?>();
     if (firebaseUser != null) {
-      return ProfileSetupPage();
+      return NearbySports();
     } else {
       return SignInPage();
     }

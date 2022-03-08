@@ -47,4 +47,8 @@ class FirestoreService {
   Stream<DocumentSnapshot> getUserDocumentStream({required User user}) {
     return _firebaseFirestore.collection('users').doc(user.uid).snapshots();
   }
+
+  Stream<QuerySnapshot> getCollectionStream({required String collectionName}) {
+    return _firebaseFirestore.collection(collectionName).snapshots();
+  }
 }

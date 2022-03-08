@@ -29,6 +29,7 @@ class _ProfileSetupPageState extends State<ProfileSetupPage> {
   Widget build(BuildContext context) {
     User user = Provider.of<User>(context, listen: false);
     Size size = MediaQuery.of(context).size;
+
     return Scaffold(
         body: SingleChildScrollView(
       padding: EdgeInsets.all(25),
@@ -46,7 +47,8 @@ class _ProfileSetupPageState extends State<ProfileSetupPage> {
                   builder: (context, AsyncSnapshot<DocumentSnapshot> snapshot) {
                     //if there is a connection to the snapshot,
                     //set the network image to the user's imageUrl
-                    if (snapshot.connectionState == ConnectionState.active) {
+                    if (snapshot.connectionState == ConnectionState.active &&
+                        snapshot.data?['imageUrl'] != null) {
                       networkprofileImage = snapshot.data!['imageUrl'];
                       return CircleAvatar(
                         backgroundImage: NetworkImage(networkprofileImage),

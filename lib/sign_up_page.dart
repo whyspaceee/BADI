@@ -89,7 +89,7 @@ class _SignUpPageState extends State<SignUpPage> {
                 await context
                     .read<FirestoreService>()
                     .createAccount(user: user);
-                Navigator.pushNamed(context, '/profileSetup');
+                await Navigator.pushNamed(context, '/profileSetup');
               }
             },
             borderRadius: BorderRadius.all(Radius.circular(50)),
