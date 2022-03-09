@@ -46,9 +46,8 @@ class MyApp extends StatelessWidget {
         ],
         child: MaterialApp(
           theme: ThemeData(
-            backgroundColor: Colors.white,
-            textTheme: GoogleFonts.openSansTextTheme(),
-          ),
+              backgroundColor: Colors.white,
+              textTheme: GoogleFonts.openSansTextTheme()),
           //routes for navigation
           home: AuthenticationWrapper(),
           routes: {

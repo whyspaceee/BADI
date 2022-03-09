@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import './theme.dart';
 import './authenticator.dart';
 import 'package:provider/provider.dart';
 
@@ -22,138 +23,164 @@ class _SignInPageState extends State<SignInPage> {
         body: Container(
           padding: const EdgeInsets.all(25),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              Container(
-                  padding: const EdgeInsets.all(50),
-                  child: Center(
-                      child: Image(
-                    image: NetworkImage(
-                        'https://firebasestorage.googleapis.com/v0/b/sportsbuddy-fd199.appspot.com/o/logoipsum-logo-46.png?alt=media&token=22a7c90a-589b-4628-ae97-32629ad933d4'),
-                  ))),
-              SizedBox(height: 15),
-              Container(
-                alignment: Alignment.centerLeft,
-                child: Text(
-                  "Login to your Account",
-                  style: TextStyle(fontSize: 17, fontWeight: FontWeight.bold),
-                ),
-              ),
-              SizedBox(
-                height: 15,
-              ),
-              //email and password form fields
-              Container(
-                  padding: (EdgeInsets.symmetric(horizontal: 20, vertical: 5)),
-                  decoration: BoxDecoration(
-                      borderRadius: BorderRadius.all(Radius.circular(12)),
-                      color: Colors.black12),
-                  child: TextFormField(
-                    controller: emailController,
-                    decoration: InputDecoration(
-                        border: InputBorder.none, hintText: "Email"),
-                    style: TextStyle(fontWeight: FontWeight.bold),
-                  )),
-              SizedBox(height: 15),
-              Container(
-                  padding: (EdgeInsets.symmetric(horizontal: 20, vertical: 5)),
-                  decoration: BoxDecoration(
-                      borderRadius: BorderRadius.all(Radius.circular(12)),
-                      color: Colors.black12),
-                  child: TextFormField(
-                    obscureText: true,
-                    controller: passController,
-                    decoration: InputDecoration(
-                        border: InputBorder.none, hintText: "Password"),
-                    style: TextStyle(fontWeight: FontWeight.bold),
-                  )),
-              SizedBox(height: 15),
-
-              InkWell(
-                //uses the provider to sign in using the AuthService class,
-                onTap: () async {
-                  FocusManager.instance.primaryFocus?.unfocus();
-                  try {
-                    await context.read<AuthService>().signIn(
-                        email: emailController.text.trim(),
-                        password: passController.text.trim());
-                  } on FirebaseAuthException catch (e) {
-                    ScaffoldMessenger.of(context)
-                        .showSnackBar(SnackBar(content: Text(e.message!)));
-                  }
-                },
-                borderRadius: BorderRadius.all(Radius.circular(12)),
-                child: Container(
-                  padding: EdgeInsets.symmetric(vertical: 12),
-                  decoration: BoxDecoration(
-                      color: Color.fromRGBO(243, 102, 52, 1),
-                      borderRadius: BorderRadius.all(Radius.circular(12))),
-                  child: Center(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                Container(
+                    padding: const EdgeInsets.all(30),
+                    child: Center(
+                        child: Image(
+                      image: NetworkImage(
+                          'https://firebasestorage.googleapis.com/v0/b/sportsbuddy-fd199.appspot.com/o/logoipsum-logo-54.png?alt=media&token=3288ac9b-66fd-4b86-9ae0-3a115c4c545a'),
+                    ))),
+                Column(children: [
+                  Container(
+                    alignment: Alignment.centerLeft,
                     child: Text(
-                      "Login",
-                      style: TextStyle(
-                          color: Colors.white, fontWeight: FontWeight.bold),
+                      "Login to your Account",
+                      style:
+                          TextStyle(fontSize: 17, fontWeight: FontWeight.bold),
                     ),
                   ),
-                ),
-              ),
-              SizedBox(
-                height: 25,
-              ),
-              Container(
-                alignment: Alignment.center,
-                child: Text(
-                  "- or continue with -",
-                  style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
-                ),
-              ),
-              SizedBox(
-                height: 15,
-              ),
-              InkWell(
-                borderRadius: BorderRadius.circular(12),
-                onTap: () => {},
-                child: Ink(
-                    decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(12),
-                        boxShadow: [
-                          BoxShadow(
-                              blurRadius: 3,
-                              spreadRadius: 2,
+                  SizedBox(
+                    height: 15,
+                  ),
+                  //email and password form fields
+                  Container(
+                      padding:
+                          (EdgeInsets.symmetric(horizontal: 5, vertical: 5)),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.all(Radius.circular(12)),
+                        color: gray1,
+                      ),
+                      child: TextFormField(
+                        controller: emailController,
+                        decoration: InputDecoration(
+                            prefixIcon: Icon(
+                              Icons.email,
                               color: Colors.black12,
-                              offset: Offset(0, 3))
-                        ]),
-                    child: Container(
-                        width: 50,
-                        height: 50,
+                            ),
+                            border: InputBorder.none,
+                            hintText: "Email",
+                            hintStyle: TextStyle(color: Colors.black26)),
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                        ),
+                      )),
+                  SizedBox(height: 15),
+                  Container(
+                      padding:
+                          (EdgeInsets.symmetric(horizontal: 5, vertical: 5)),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.all(Radius.circular(12)),
+                        color: gray1,
+                      ),
+                      child: TextFormField(
+                        obscureText: true,
+                        controller: passController,
+                        decoration: InputDecoration(
+                            prefixIcon: Icon(
+                              Icons.password,
+                              color: Colors.black12,
+                            ),
+                            border: InputBorder.none,
+                            hintText: "Password",
+                            hintStyle: TextStyle(color: Colors.black26)),
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      )),
+                  SizedBox(height: 15),
+
+                  InkWell(
+                    //uses the provider to sign in using the AuthService class,
+                    onTap: () async {
+                      FocusManager.instance.primaryFocus?.unfocus();
+                      try {
+                        await context.read<AuthService>().signIn(
+                            email: emailController.text.trim(),
+                            password: passController.text.trim());
+                      } on FirebaseAuthException catch (e) {
+                        ScaffoldMessenger.of(context)
+                            .showSnackBar(SnackBar(content: Text(e.message!)));
+                      }
+                    },
+                    borderRadius: BorderRadius.all(Radius.circular(12)),
+                    child: Ink(
+                      padding: EdgeInsets.symmetric(vertical: 12),
+                      decoration: BoxDecoration(
+                        color: orange1,
+                        borderRadius: BorderRadius.all(
+                          Radius.circular(12),
+                        ),
+                      ),
+                      child: Center(
+                        child: Text(
+                          "Sign in",
+                          style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 15,
+                              fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                    ),
+                  ),
+                ]),
+                Column(children: [
+                  Container(
+                    alignment: Alignment.center,
+                    child: Text(
+                      "- or continue with -",
+                      style: TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.grey),
+                    ),
+                  ),
+                  SizedBox(
+                    height: 15,
+                  ),
+                  InkWell(
+                    borderRadius: BorderRadius.circular(12),
+                    onTap: () => {},
+                    child: Ink(
+                        height: 60,
+                        width: 60,
                         decoration: BoxDecoration(
-                            image: DecorationImage(
-                                image:
-                                    AssetImage('assets/logos/google.png'))))),
-              ),
-              SizedBox(
-                height: 15,
-              ),
-              GestureDetector(
-                child: Text(
-                  "Forgot your password?",
-                  style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
-                ),
-              ),
-              SizedBox(
-                height: 15,
-              ),
-              //navigates to the signup page
-              GestureDetector(
-                child: Text("Sign up",
-                    style:
-                        TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
-                onTap: () => {Navigator.pushNamed(context, '/signUp')},
-              )
-            ],
-          ),
+                            color: Theme.of(context).scaffoldBackgroundColor,
+                            borderRadius: BorderRadius.circular(12),
+                            boxShadow: [box_shadow]),
+                        child: Container(
+                            margin: EdgeInsets.all(10),
+                            decoration: BoxDecoration(
+                                image: DecorationImage(
+                                    image: AssetImage(
+                                        'assets/logos/google.png'))))),
+                  ),
+                  SizedBox(
+                    height: 15,
+                  ),
+                  GestureDetector(
+                    child: Text(
+                      "Forgot your password?",
+                      style: TextStyle(
+                          fontSize: 10,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.grey),
+                    ),
+                  ),
+                  SizedBox(
+                    height: 5,
+                  ),
+                  //navigates to the signup page
+                  GestureDetector(
+                    child: Text("Sign up",
+                        style: TextStyle(
+                            fontSize: 10,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.grey)),
+                    onTap: () => {Navigator.pushNamed(context, '/signUp')},
+                  ),
+                ]),
+              ]),
         ));
   }
 }
