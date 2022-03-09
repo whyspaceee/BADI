@@ -47,7 +47,7 @@ class MyApp extends StatelessWidget {
         child: MaterialApp(
           theme: ThemeData(
             backgroundColor: Colors.white,
-            textTheme: GoogleFonts.poppinsTextTheme(),
+            textTheme: GoogleFonts.openSansTextTheme(),
           ),
           //routes for navigation
           home: AuthenticationWrapper(),
@@ -70,7 +70,7 @@ class AuthenticationWrapper extends StatelessWidget {
   Widget build(BuildContext context) {
     final firebaseUser = context.watch<User?>();
     if (firebaseUser != null) {
-      return NearbySports();
+      return ProfileSetupPage();
     } else {
       return SignInPage();
     }
