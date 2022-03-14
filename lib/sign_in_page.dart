@@ -56,13 +56,15 @@ class _SignInPageState extends State<SignInPage> {
                       child: TextFormField(
                         controller: emailController,
                         decoration: InputDecoration(
-                            prefixIcon: Icon(
-                              Icons.email,
-                              color: Colors.black12,
-                            ),
-                            border: InputBorder.none,
-                            hintText: "Email",
-                            hintStyle: TextStyle(color: Colors.black26)),
+                          prefixIcon: Icon(
+                            Icons.email,
+                            color: Colors.black12,
+                          ),
+                          border: InputBorder.none,
+                          hintText: "Email",
+                          hintStyle:
+                              TextStyle(color: Colors.black26, fontSize: 14),
+                        ),
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                         ),
@@ -85,7 +87,8 @@ class _SignInPageState extends State<SignInPage> {
                             ),
                             border: InputBorder.none,
                             hintText: "Password",
-                            hintStyle: TextStyle(color: Colors.black26)),
+                            hintStyle:
+                                TextStyle(color: Colors.black26, fontSize: 14)),
                         style: TextStyle(fontWeight: FontWeight.bold),
                       )),
                   SizedBox(height: 15),
