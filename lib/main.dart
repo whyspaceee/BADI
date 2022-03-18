@@ -5,6 +5,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:sports_buddy/main_menu.dart';
 import 'package:sports_buddy/maps_page.dart';
 import 'package:sports_buddy/profile_setup_page.dart';
 import 'package:sports_buddy/sign_up_page.dart';
@@ -77,22 +78,3 @@ class AuthenticationWrapper extends StatelessWidget {
 }
 
 //temporary main menu screen for testing
-class MainMenu extends StatefulWidget {
-  const MainMenu({Key? key}) : super(key: key);
-
-  @override
-  _MainMenuState createState() => _MainMenuState();
-}
-
-class _MainMenuState extends State<MainMenu> {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-        body: Container(
-      child: RaisedButton(
-        child: Text("Sign Out"),
-        onPressed: () => {context.read<AuthService>().signOut()},
-      ),
-    ));
-  }
-}

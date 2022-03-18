@@ -63,10 +63,7 @@ class _SignInPageState extends State<SignInPage> {
                           border: InputBorder.none,
                           hintText: "Email",
                           hintStyle:
-                              TextStyle(color: Colors.black26, fontSize: 14),
-                        ),
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
+                              TextStyle(color: Colors.black26, fontSize: 17),
                         ),
                       )),
                   SizedBox(height: 15),
@@ -88,8 +85,7 @@ class _SignInPageState extends State<SignInPage> {
                             border: InputBorder.none,
                             hintText: "Password",
                             hintStyle:
-                                TextStyle(color: Colors.black26, fontSize: 14)),
-                        style: TextStyle(fontWeight: FontWeight.bold),
+                                TextStyle(color: Colors.black26, fontSize: 17)),
                       )),
                   SizedBox(height: 15),
 
