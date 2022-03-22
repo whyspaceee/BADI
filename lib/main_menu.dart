@@ -1,11 +1,15 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
 import 'package:sports_buddy/authenticator.dart';
 import 'package:sports_buddy/firestore_service.dart';
+import 'package:sports_buddy/theme.dart';
 import 'maps_page.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:provider/provider.dart';
+import './sign_in_page.dart';
 
 class MainMenu extends StatefulWidget {
   const MainMenu({Key? key}) : super(key: key);
@@ -17,16 +21,106 @@ class MainMenu extends StatefulWidget {
 class _MainMenuState extends State<MainMenu> {
   @override
   Location location = Location();
-
+  TextEditingController searchController = TextEditingController();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        body: Column(
-      children: [
-        MapsWidget(),
-        RaisedButton(onPressed: (() => {context.read<AuthService>().signOut()}))
-      ],
+      resizeToAvoidBottomInset: false,
+      body: SafeArea(
+          child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SearchBar(controller: searchController),
+          MapsWidget(),
+          Text("Activites"),
+          RaisedButton(
+              onPressed: (() => {context.read<AuthService>().signOut()}))
+        ],
+      )),
+      floatingActionButtonLocation: FloatingActionButtonLocation
+          .centerDocked, //specify the location of the FAB
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {},
+        backgroundColor: orange1,
+        child: Container(
+          margin: EdgeInsets.all(15.0),
+          child: Icon(Icons.add),
+        ),
+      ),
+      bottomNavigationBar: BottomAppBar(
+        child: BottomAppBarWidget(),
+        shape: CircularNotchedRectangle(),
+        color: Colors.white,
+      ),
+    );
+  }
+}
+
+class ActivitiesWidget extends StatefulWidget {
+  const ActivitiesWidget({Key? key}) : super(key: key);
+
+  @override
+  State<ActivitiesWidget> createState() => _ActivitiesWidgetState();
+}
+
+class _ActivitiesWidgetState extends State<ActivitiesWidget> {
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+        child: Column(
+      children: [Text("Activities")],
     ));
+  }
+}
+
+class BottomAppBarWidget extends StatelessWidget {
+  const BottomAppBarWidget({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: EdgeInsets.only(left: 12.0, right: 12.0),
+      child: Row(
+        mainAxisSize: MainAxisSize.max,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: <Widget>[
+          IconButton(
+            //update the bottom app bar view each time an item is clicked
+            onPressed: () {},
+            iconSize: 27.0,
+            icon: Icon(
+              Icons.home,
+              //darken the icon if it is selected or else give it a different color
+            ),
+          ),
+          IconButton(
+            onPressed: () {},
+            iconSize: 27.0,
+            icon: Icon(
+              Icons.call_made,
+            ),
+          ),
+          //to leave space in between the bottom app bar items and below the FAB
+          SizedBox(
+            width: 50.0,
+          ),
+          IconButton(
+            onPressed: () {},
+            iconSize: 27.0,
+            icon: Icon(
+              Icons.call_received,
+            ),
+          ),
+          IconButton(
+            onPressed: () {},
+            iconSize: 27.0,
+            icon: Icon(
+              Icons.settings,
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }
 
@@ -74,33 +168,37 @@ class _MapsWidgetState extends State<MapsWidget> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: EdgeInsets.all(25),
-      decoration:
-          BoxDecoration(borderRadius: BorderRadius.all(Radius.circular(50))),
-      height: 200,
-      child: StreamBuilder(
-          stream: context
-              .read<FirestoreService>()
-              .getCollectionStream(collectionName: 'activities'),
-          builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
-            if (snapshot.hasData) {
-              _updateMarkers(snapshot.data!.docs);
-            }
-            return (GoogleMap(
-              zoomControlsEnabled: false,
-              compassEnabled: false,
-              onMapCreated: _onMapCreated,
-              initialCameraPosition: (CameraPosition(
-                  target: LatLng(-7.770717, 110.377724), zoom: 15)),
-              markers: Set<Marker>.of(markers.values),
-            ));
-          }),
-    );
+        margin: EdgeInsets.symmetric(vertical: 25, horizontal: 15),
+        decoration:
+            BoxDecoration(borderRadius: BorderRadius.all(Radius.circular(50))),
+        height: 200,
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(12),
+          child: StreamBuilder(
+              stream: context
+                  .read<FirestoreService>()
+                  .getCollectionStream(collectionName: 'activities'),
+              builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
+                if (snapshot.hasData) {
+                  _updateMarkers(snapshot.data!.docs);
+                }
+                return (GoogleMap(
+                  zoomControlsEnabled: false,
+                  compassEnabled: false,
+                  onMapCreated: _onMapCreated,
+                  initialCameraPosition: (CameraPosition(
+                      target: LatLng(-7.770717, 110.377724), zoom: 15)),
+                  markers: Set<Marker>.of(markers.values),
+                ));
+              }),
+        ));
   }
 }
 
 class SearchBar extends StatefulWidget {
-  const SearchBar({Key? key}) : super(key: key);
+  TextEditingController controller;
+  SearchBar({Key? key, required TextEditingController this.controller})
+      : super(key: key);
 
   @override
   State<SearchBar> createState() => _SearchBarState();
@@ -109,17 +207,50 @@ class SearchBar extends StatefulWidget {
 class _SearchBarState extends State<SearchBar> {
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        Container(
-            decoration: BoxDecoration(
-                borderRadius:
-                    BorderRadius.vertical(bottom: Radius.circular(50)))),
+    final searchController = widget.controller;
+    return Container(
+      height: 60,
+      decoration: BoxDecoration(
+          borderRadius: BorderRadius.vertical(bottom: Radius.circular(12)),
+          color: orange1),
+      child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
         Center(
-            child: Container(
-          child: TextField(),
-        ))
-      ],
+          child: Container(
+              height: 40,
+              width: MediaQuery.of(context).size.width / 1.3,
+              child: TextField(
+                maxLines: 1,
+                textAlign: TextAlign.start,
+                textAlignVertical: TextAlignVertical.bottom,
+                decoration: InputDecoration(
+                  isDense: true,
+                  contentPadding: EdgeInsets.fromLTRB(5.0, 9, 5.0, 9),
+                  prefixIcon: Icon(
+                    CupertinoIcons.search,
+                    color: Colors.black26,
+                  ),
+                  filled: true,
+                  fillColor: gray1,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10.0),
+                    borderSide:
+                        BorderSide(color: Colors.transparent, width: 0.0),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10.0),
+                    borderSide:
+                        BorderSide(color: Colors.transparent, width: 0.0),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10.0),
+                      borderSide:
+                          BorderSide(color: Colors.transparent, width: 0.0)),
+                  hintText: "Find your sports buddy",
+                ),
+                controller: searchController,
+              )),
+        ),
+      ]),
     );
   }
 }
