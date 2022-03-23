@@ -10,6 +10,9 @@ import 'maps_page.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:provider/provider.dart';
 import './sign_in_page.dart';
+import './authenticator.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import './theme.dart';
 
 class MainMenu extends StatefulWidget {
   const MainMenu({Key? key}) : super(key: key);
@@ -32,7 +35,7 @@ class _MainMenuState extends State<MainMenu> {
         children: [
           SearchBar(controller: searchController),
           MapsWidget(),
-          Text("Activites"),
+          RecentActivities(),
           RaisedButton(
               onPressed: (() => {context.read<AuthService>().signOut()}))
         ],
@@ -51,6 +54,77 @@ class _MainMenuState extends State<MainMenu> {
         child: BottomAppBarWidget(),
         shape: CircularNotchedRectangle(),
         color: Colors.white,
+      ),
+    );
+  }
+}
+
+class RecentActivities extends StatefulWidget {
+  const RecentActivities({Key? key}) : super(key: key);
+
+  @override
+  State<RecentActivities> createState() => _RecentActivitiesState();
+}
+
+class _RecentActivitiesState extends State<RecentActivities> {
+  IconData setIcons(String type) {
+    if (type == "Tennis") return Icons.sports_tennis;
+    if (type == "Basketball") return Icons.sports_basketball;
+    if (type == "Soccer") return Icons.sports_soccer;
+    return Icons.sports;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final user = Provider.of<User?>(context, listen: false);
+
+    return Container(
+      height: 120,
+      margin: EdgeInsets.symmetric(vertical: 15, horizontal: 15),
+      child: StreamBuilder(
+        stream: FirebaseFirestore.instance
+            .collection('activities')
+            .where('uid', isEqualTo: user!.uid)
+            .snapshots(),
+        builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
+          if (snapshot.hasData) {
+            return ListView.builder(
+                scrollDirection: Axis.horizontal,
+                itemCount: snapshot.data!.docs.length,
+                itemBuilder: (context, index) {
+                  var sportIcon = setIcons(snapshot.data!.docs[index]['type']);
+                  return Container(
+                      width: 100,
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(25),
+                          color: Theme.of(context).scaffoldBackgroundColor,
+                          boxShadow: [box_shadow]),
+                      margin: EdgeInsets.all(7),
+                      padding: EdgeInsets.all(10),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: [
+                          Container(
+                            width: 50,
+                            height: 50,
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(25),
+                                color: orange1),
+                            child: Icon(
+                              sportIcon,
+                              size: 30,
+                              color: Colors.white,
+                            ),
+                          ),
+                          Text(
+                            snapshot.data!.docs[index]["type"],
+                          ),
+                        ],
+                      ));
+                });
+          }
+          return CircularProgressIndicator();
+        },
       ),
     );
   }
@@ -143,7 +217,6 @@ class _MapsWidgetState extends State<MapsWidget> {
       var marker = Marker(
         markerId: markerId,
         position: LatLng(pos.latitude, pos.longitude),
-        icon: BitmapDescriptor.defaultMarker,
       );
       markers[markerId] = marker;
     });
@@ -210,14 +283,12 @@ class _SearchBarState extends State<SearchBar> {
     final searchController = widget.controller;
     return Container(
       height: 60,
-      decoration: BoxDecoration(
-          borderRadius: BorderRadius.vertical(bottom: Radius.circular(12)),
-          color: orange1),
+      decoration: BoxDecoration(color: orange1),
       child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
         Center(
           child: Container(
               height: 40,
-              width: MediaQuery.of(context).size.width / 1.3,
+              width: MediaQuery.of(context).size.width / 1.2,
               child: TextField(
                 maxLines: 1,
                 textAlign: TextAlign.start,
