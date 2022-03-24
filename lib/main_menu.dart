@@ -43,7 +43,9 @@ class _MainMenuState extends State<MainMenu> {
       floatingActionButtonLocation: FloatingActionButtonLocation
           .centerDocked, //specify the location of the FAB
       floatingActionButton: FloatingActionButton(
-        onPressed: () {},
+        onPressed: () {
+          Navigator.pushNamed(context, '/addActivity');
+        },
         backgroundColor: orange1,
         child: Container(
           margin: EdgeInsets.all(15.0),
@@ -79,54 +81,63 @@ class _RecentActivitiesState extends State<RecentActivities> {
     final user = Provider.of<User?>(context, listen: false);
 
     return Container(
-      height: 120,
-      margin: EdgeInsets.symmetric(vertical: 15, horizontal: 15),
-      child: StreamBuilder(
-        stream: FirebaseFirestore.instance
-            .collection('activities')
-            .where('uid', isEqualTo: user!.uid)
-            .snapshots(),
-        builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
-          if (snapshot.hasData) {
-            return ListView.builder(
-                scrollDirection: Axis.horizontal,
-                itemCount: snapshot.data!.docs.length,
-                itemBuilder: (context, index) {
-                  var sportIcon = setIcons(snapshot.data!.docs[index]['type']);
-                  return Container(
-                      width: 100,
-                      decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(25),
-                          color: Theme.of(context).scaffoldBackgroundColor,
-                          boxShadow: [box_shadow]),
-                      margin: EdgeInsets.all(7),
-                      padding: EdgeInsets.all(10),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.spaceAround,
-                        children: [
-                          Container(
-                            width: 50,
-                            height: 50,
+        height: 160,
+        margin: EdgeInsets.symmetric(vertical: 15, horizontal: 15),
+        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          Container(
+              margin: EdgeInsets.symmetric(horizontal: 15, vertical: 5),
+              child: Text("Recent Activities")),
+          Container(
+            height: 130,
+            child: StreamBuilder(
+              stream: FirebaseFirestore.instance
+                  .collection('activities')
+                  .where('uid', isEqualTo: user!.uid)
+                  .snapshots(),
+              builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
+                if (snapshot.hasData) {
+                  return ListView.builder(
+                      scrollDirection: Axis.horizontal,
+                      itemCount: snapshot.data!.docs.length,
+                      itemBuilder: (context, index) {
+                        var sportIcon =
+                            setIcons(snapshot.data!.docs[index]['type']);
+                        return Container(
+                            width: 100,
                             decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(25),
-                                color: orange1),
-                            child: Icon(
-                              sportIcon,
-                              size: 30,
-                              color: Colors.white,
-                            ),
-                          ),
-                          Text(
-                            snapshot.data!.docs[index]["type"],
-                          ),
-                        ],
-                      ));
-                });
-          }
-          return CircularProgressIndicator();
-        },
-      ),
-    );
+                                color:
+                                    Theme.of(context).scaffoldBackgroundColor,
+                                boxShadow: [box_shadow]),
+                            margin: EdgeInsets.all(7),
+                            padding: EdgeInsets.all(10),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.spaceAround,
+                              children: [
+                                Container(
+                                  width: 50,
+                                  height: 50,
+                                  decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(25),
+                                      color: orange1),
+                                  child: Icon(
+                                    sportIcon,
+                                    size: 30,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                                Text(
+                                  snapshot.data!.docs[index]["type"],
+                                ),
+                              ],
+                            ));
+                      });
+                }
+                return CircularProgressIndicator();
+              },
+            ),
+          )
+        ]));
   }
 }
 
@@ -238,6 +249,10 @@ class _MapsWidgetState extends State<MapsWidget> {
         .animateCamera(CameraUpdate.newCameraPosition(currentCameraPosition));
   }
 
+  void _onTap(LatLng latLng) {
+    Navigator.pushNamed(context, '/mapPage');
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -256,6 +271,12 @@ class _MapsWidgetState extends State<MapsWidget> {
                   _updateMarkers(snapshot.data!.docs);
                 }
                 return (GoogleMap(
+                  scrollGesturesEnabled: false,
+                  buildingsEnabled: false,
+                  rotateGesturesEnabled: false,
+                  tiltGesturesEnabled: false,
+                  zoomGesturesEnabled: false,
+                  onTap: _onTap,
                   zoomControlsEnabled: false,
                   compassEnabled: false,
                   onMapCreated: _onMapCreated,

@@ -5,6 +5,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:sports_buddy/add_activity_page.dart';
 import 'package:sports_buddy/main_menu.dart';
 import 'package:sports_buddy/maps_page.dart';
 import 'package:sports_buddy/profile_setup_page.dart';
@@ -56,6 +57,8 @@ class MyApp extends StatelessWidget {
             '/authWrapper': (context) => const AuthenticationWrapper(),
             '/signUp': (context) => const SignUpPage(),
             '/profileSetup': (context) => const ProfileSetupPage(),
+            '/mapPage': (context) => const NearbySports(),
+            '/addActivity': (context) => const AddActivity(),
           },
         ));
   }
@@ -76,5 +79,6 @@ class AuthenticationWrapper extends StatelessWidget {
     }
   }
 }
+
 
 //temporary main menu screen for testing
