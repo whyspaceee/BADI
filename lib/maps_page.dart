@@ -21,7 +21,7 @@ class _NearbySportsState extends State<NearbySports> {
   GoogleMapController? controller;
   MapService mapService = MapService(Location());
   Map<MarkerId, Marker> markers = <MarkerId, Marker>{};
-  LocationData? userLocation;
+  Future<LocationData>? userLocation;
   IconData setIcons(String type) {
     if (type == "Tennis") return Icons.sports_tennis;
     if (type == "Basketball") return Icons.sports_basketball;
@@ -30,8 +30,7 @@ class _NearbySportsState extends State<NearbySports> {
     return Icons.sports;
   }
 
-  String getDistance(GeoPoint geo) {
-    LocationData currentLocation = userLocation!;
+  String getDistance(GeoPoint geo, LocationData currentLocation) {
     final latDiff = geo.latitude - currentLocation.latitude!;
     final longDiff = geo.longitude - currentLocation.longitude!;
     final distance = sqrt(pow(latDiff, 2)) + pow(longDiff, 2);
@@ -39,8 +38,7 @@ class _NearbySportsState extends State<NearbySports> {
   }
 
   Future<void> setCurrentLocation() async {
-    final Location = await mapService.getUserLocation();
-    userLocation = Location;
+    userLocation = mapService.getUserLocation();
   }
 
   @override
@@ -52,7 +50,6 @@ class _NearbySportsState extends State<NearbySports> {
   @override
   Widget build(BuildContext context) {
     setCurrentLocation();
-
     return Scaffold(
         body: Stack(children: [
       Container(
@@ -97,75 +94,97 @@ class _NearbySportsState extends State<NearbySports> {
                         margin: EdgeInsets.symmetric(vertical: 5),
                         height: MediaQuery.of(context).size.height / 4,
                         child: StreamBuilder(
-                          stream: FirebaseFirestore.instance
-                              .collection('activities')
-                              .where('active', isEqualTo: true)
-                              .snapshots(),
-                          builder:
-                              (context, AsyncSnapshot<QuerySnapshot> snapshot) {
-                            if (snapshot.hasData) {
-                              return ListView.builder(
-                                  scrollDirection: Axis.horizontal,
-                                  itemCount: snapshot.data!.docs.length,
-                                  itemBuilder: (context, index) {
-                                    GeoPoint gp =
-                                        snapshot.data!.docs[index]['position'];
-                                    var sportIcon = setIcons(
-                                        snapshot.data!.docs[index]['type']);
-                                    final activityOwner = FirebaseFirestore
-                                        .instance
-                                        .collection('users')
-                                        .where('uid',
-                                            isEqualTo: snapshot
-                                                .data!.docs[index]['uid'])
-                                        .get();
-                                    if (userLocation != null)
-                                      return InkWell(
-                                          onTap: () => {},
-                                          child: Container(
-                                              width: MediaQuery.of(context)
-                                                      .size
-                                                      .width /
-                                                  3.1,
-                                              decoration: BoxDecoration(
-                                                  borderRadius:
-                                                      BorderRadius.circular(25),
-                                                  color: Theme.of(context)
-                                                      .scaffoldBackgroundColor,
-                                                  boxShadow: [box_shadow]),
-                                              margin: EdgeInsets.all(7),
-                                              padding: EdgeInsets.all(10),
-                                              child: Column(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment
-                                                        .spaceAround,
-                                                children: [
-                                                  Container(
-                                                    width: 50,
-                                                    height: 50,
-                                                    decoration: BoxDecoration(
-                                                        borderRadius:
-                                                            BorderRadius
-                                                                .circular(25),
-                                                        color: orange1),
-                                                    child: Icon(
-                                                      sportIcon,
-                                                      size: 30,
-                                                      color: Colors.white,
-                                                    ),
-                                                  ),
-                                                  Text(snapshot.data!
-                                                      .docs[index]['type']),
-                                                  Text(getDistance(gp) + " km"),
-                                                ],
-                                              )));
-                                    return Container();
-                                  });
-                            }
-                            return Container();
-                          },
-                        ))
-                  ]))),
+                            stream: FirebaseFirestore.instance
+                                .collection('activities')
+                                .where('active', isEqualTo: true)
+                                .snapshots(),
+                            builder: (context,
+                                AsyncSnapshot<QuerySnapshot> snapshot) {
+                              if (snapshot.hasData) {
+                                return ListView.builder(
+                                    scrollDirection: Axis.horizontal,
+                                    itemCount: snapshot.data!.docs.length,
+                                    itemBuilder: (context, index) {
+                                      GeoPoint gp = snapshot.data!.docs[index]
+                                          ['position'];
+                                      var sportIcon = setIcons(
+                                          snapshot.data!.docs[index]['type']);
+                                      final activityOwner = FirebaseFirestore
+                                          .instance
+                                          .collection('users')
+                                          .where('uid',
+                                              isEqualTo: snapshot
+                                                  .data!.docs[index]['uid'])
+                                          .get();
+                                      return FutureBuilder(
+                                          future: userLocation,
+                                          builder: (context,
+                                              AsyncSnapshot<LocationData>
+                                                  futureLoc) {
+                                            if (futureLoc.hasData) {
+                                              return InkWell(
+                                                  onTap: () =>
+                                                      {animateToLocation(gp)},
+                                                  child: Container(
+                                                      width:
+                                                          MediaQuery.of(context)
+                                                                  .size
+                                                                  .width /
+                                                              3.1,
+                                                      decoration: BoxDecoration(
+                                                          borderRadius:
+                                                              BorderRadius
+                                                                  .circular(25),
+                                                          color: Theme.of(
+                                                                  context)
+                                                              .scaffoldBackgroundColor,
+                                                          boxShadow: [
+                                                            box_shadow
+                                                          ]),
+                                                      margin: EdgeInsets.all(7),
+                                                      padding:
+                                                          EdgeInsets.all(10),
+                                                      child: Column(
+                                                        mainAxisAlignment:
+                                                            MainAxisAlignment
+                                                                .spaceAround,
+                                                        children: [
+                                                          Container(
+                                                            width: 50,
+                                                            height: 50,
+                                                            decoration: BoxDecoration(
+                                                                borderRadius:
+                                                                    BorderRadius
+                                                                        .circular(
+                                                                            25),
+                                                                color: orange1),
+                                                            child: Icon(
+                                                              sportIcon,
+                                                              size: 30,
+                                                              color:
+                                                                  Colors.white,
+                                                            ),
+                                                          ),
+                                                          Text(snapshot.data!
+                                                                  .docs[index]
+                                                              ['type']),
+                                                          Text(getDistance(
+                                                                  gp,
+                                                                  futureLoc
+                                                                      .data!) +
+                                                              " km"),
+                                                        ],
+                                                      )));
+                                            } else {
+                                              return Container();
+                                            }
+                                          });
+                                    });
+                              } else {
+                                return Container();
+                              }
+                            }))
+                  ])))
     ]));
   }
 
@@ -204,5 +223,18 @@ class _NearbySportsState extends State<NearbySports> {
       );
       markers[markerId] = marker;
     });
+  }
+}
+
+class JoinActivity extends StatelessWidget {
+  const JoinActivity({ Key? key }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      child: Column(children: [
+        
+      ],)
+    );
   }
 }

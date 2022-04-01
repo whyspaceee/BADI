@@ -1,15 +1,12 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
 import 'package:sports_buddy/authenticator.dart';
 import 'package:sports_buddy/firestore_service.dart';
 import 'package:sports_buddy/theme.dart';
-import 'maps_page.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:provider/provider.dart';
-import './sign_in_page.dart';
 import './authenticator.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import './theme.dart';
@@ -22,7 +19,6 @@ class MainMenu extends StatefulWidget {
 }
 
 class _MainMenuState extends State<MainMenu> {
-  @override
   Location location = Location();
   TextEditingController searchController = TextEditingController();
   @override
@@ -30,16 +26,12 @@ class _MainMenuState extends State<MainMenu> {
     return Scaffold(
       resizeToAvoidBottomInset: false,
       body: SafeArea(
-          child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          SearchBar(controller: searchController),
-          MapsWidget(),
-          RecentActivities(),
-          RaisedButton(
-              onPressed: (() => {context.read<AuthService>().signOut()}))
-        ],
-      )),
+          child:
+              Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        SearchBar(controller: searchController),
+        MapsWidget(),
+        RecentActivities(),
+      ])),
       floatingActionButtonLocation: FloatingActionButtonLocation
           .centerDocked, //specify the location of the FAB
       floatingActionButton: FloatingActionButton(
@@ -190,7 +182,9 @@ class BottomAppBarWidget extends StatelessWidget {
             width: 50.0,
           ),
           IconButton(
-            onPressed: () {},
+            onPressed: () {
+              context.read<AuthService>().signOut();
+            },
             iconSize: 27.0,
             icon: Icon(
               Icons.call_received,

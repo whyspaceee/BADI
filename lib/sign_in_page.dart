@@ -27,12 +27,10 @@ class _SignInPageState extends State<SignInPage> {
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
                 Container(
-                    padding: const EdgeInsets.all(30),
+                    padding: const EdgeInsets.all(25),
                     child: Center(
-                        child: Image(
-                      image: NetworkImage(
-                          'https://firebasestorage.googleapis.com/v0/b/sportsbuddy-fd199.appspot.com/o/logoipsum-logo-54.png?alt=media&token=3288ac9b-66fd-4b86-9ae0-3a115c4c545a'),
-                    ))),
+                        child:
+                            Image(image: AssetImage('assets/logos/badi.png')))),
                 Column(children: [
                   Container(
                     alignment: Alignment.centerLeft,

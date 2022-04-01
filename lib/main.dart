@@ -17,9 +17,11 @@ import 'firebase_options.dart';
 import './sign_in_page.dart';
 import './firestore_service.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await dotenv.load(fileName: "envFile.env");
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   runApp(const MyApp());
 }
@@ -48,6 +50,7 @@ class MyApp extends StatelessWidget {
         ],
         child: MaterialApp(
           theme: ThemeData(
+              scaffoldBackgroundColor: Colors.white,
               backgroundColor: Colors.white,
               textTheme: GoogleFonts.openSansTextTheme()),
           //routes for navigation

@@ -34,9 +34,7 @@ class AuthService {
         default:
           errorMessage = "An undefined Error happened.";
       }
-      if (errorMessage != null) {
-        throw FirebaseAuthException(code: errorcode, message: errorMessage);
-      }
+      throw FirebaseAuthException(code: errorcode, message: errorMessage);
     }
   }
 
@@ -70,9 +68,8 @@ class AuthService {
         default:
           errorMessage = "An undefined Error happened.";
       }
-      if (errorMessage != null) {
-        throw FirebaseAuthException(code: errorcode, message: errorMessage);
-      }
+
+      throw FirebaseAuthException(code: errorcode, message: errorMessage);
     }
   }
 }

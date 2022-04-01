@@ -1,6 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_firebase_chat_core/flutter_firebase_chat_core.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 
@@ -39,7 +38,7 @@ class FirestoreService {
 
   //get the user document reference
   Future<DocumentReference> getUserReference({required User user}) async {
-    return await _firebaseFirestore.collection('users').doc(user.uid);
+    return _firebaseFirestore.collection('users').doc(user.uid);
   }
 
   //get a stream of user document snapshots
