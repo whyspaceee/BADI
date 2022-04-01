@@ -29,7 +29,7 @@ class _AddActivityState extends State<AddActivity> {
   }
 
   void initgooglePlace() async {
-    String apiKey = 'AIzaSyCAcVbmPYxK36EfiIRT9emtRzgghXFwkkE';
+    String apiKey = dotenv.env['apiKey']!;
     googlePlace = GooglePlace(apiKey);
   }
 
