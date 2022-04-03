@@ -5,19 +5,21 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:sports_buddy/add_activity_page.dart';
-import 'package:sports_buddy/main_menu.dart';
-import 'package:sports_buddy/maps_page.dart';
-import 'package:sports_buddy/profile_setup_page.dart';
-import 'package:sports_buddy/sign_up_page.dart';
-import 'package:sports_buddy/storage_service.dart';
-import '/authenticator.dart';
+import 'package:sports_buddy/view/add_activity_page.dart';
+import 'package:sports_buddy/view/chat_widget.dart';
+import 'package:sports_buddy/view/maps_page.dart';
+import 'package:sports_buddy/view/profile_setup_page.dart';
+import 'package:sports_buddy/view/sign_up_page.dart';
+import 'package:sports_buddy/services/storage_service.dart';
+import 'view/main_menu.dart';
+import '/services/authenticator.dart';
 import 'package:provider/provider.dart';
 import 'firebase_options.dart';
-import './sign_in_page.dart';
-import './firestore_service.dart';
+import '/view/sign_in_page.dart';
+import '/services/firestore_service.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:sports_buddy/view/choose_interest.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -50,9 +52,11 @@ class MyApp extends StatelessWidget {
         ],
         child: MaterialApp(
           theme: ThemeData(
+              unselectedWidgetColor: Colors.transparent,
               scaffoldBackgroundColor: Colors.white,
               backgroundColor: Colors.white,
-              textTheme: GoogleFonts.openSansTextTheme()),
+              textTheme: GoogleFonts.openSansTextTheme(TextTheme())),
+
           //routes for navigation
           home: AuthenticationWrapper(),
           routes: {
@@ -62,6 +66,9 @@ class MyApp extends StatelessWidget {
             '/profileSetup': (context) => const ProfileSetupPage(),
             '/mapPage': (context) => const NearbySports(),
             '/addActivity': (context) => const AddActivity(),
+            '/selectSports': (context) => SelectSportsPage(),
+            '/chatUsers': (context) => const UsersPage(),
+            '/followingList': (context) => const FollowingList()
           },
         ));
   }
@@ -76,7 +83,7 @@ class AuthenticationWrapper extends StatelessWidget {
   Widget build(BuildContext context) {
     final firebaseUser = context.watch<User?>();
     if (firebaseUser != null) {
-      return MainMenu();
+      return SelectSportsPage();
     } else {
       return SignInPage();
     }

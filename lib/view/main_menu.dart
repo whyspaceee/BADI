@@ -2,14 +2,17 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
-import 'package:sports_buddy/authenticator.dart';
-import 'package:sports_buddy/firestore_service.dart';
-import 'package:sports_buddy/theme.dart';
+import 'package:sports_buddy/models/user_model.dart';
+import 'package:sports_buddy/models/activity_model.dart';
+import 'package:sports_buddy/services/authenticator.dart';
+import 'package:sports_buddy/services/firestore_service.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:provider/provider.dart';
-import './authenticator.dart';
+import '/services/authenticator.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import './theme.dart';
+import 'package:sports_buddy/theme.dart';
+import 'package:sports_buddy/utils/set_icons.dart';
+import 'package:sports_buddy/view/maps_page.dart';
 
 class MainMenu extends StatefulWidget {
   const MainMenu({Key? key}) : super(key: key);
@@ -26,12 +29,19 @@ class _MainMenuState extends State<MainMenu> {
     return Scaffold(
       resizeToAvoidBottomInset: false,
       body: SafeArea(
-          child:
-              Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        SearchBar(controller: searchController),
-        MapsWidget(),
-        RecentActivities(),
-      ])),
+          child: SingleChildScrollView(
+              child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+            SearchBar(controller: searchController),
+            MapsWidget(),
+            Container(
+              child: Text("Friend activity"),
+              margin: EdgeInsets.symmetric(horizontal: 30, vertical: 5),
+            ),
+            FriendActivities(),
+            RecentActivities(),
+          ]))),
       floatingActionButtonLocation: FloatingActionButtonLocation
           .centerDocked, //specify the location of the FAB
       floatingActionButton: FloatingActionButton(
@@ -53,6 +63,86 @@ class _MainMenuState extends State<MainMenu> {
   }
 }
 
+class FriendActivities extends StatelessWidget {
+  FriendActivities({Key? key}) : super(key: key);
+  List? list;
+
+  @override
+  Widget build(BuildContext context) {
+    final user = Provider.of<User?>(context, listen: false);
+    final list = context.read<FirestoreService>().getFriendActivity(user!);
+    return Container(
+        height: 160,
+        child: FutureBuilder(
+            future: list,
+            builder:
+                (context, AsyncSnapshot<List<ActivityModel>> querySnapshot) {
+              if (querySnapshot.hasData) {
+                return Container(
+                  margin: EdgeInsets.symmetric(horizontal: 15),
+                  child: ListView.builder(
+                      scrollDirection: Axis.horizontal,
+                      itemCount: querySnapshot.data!.length,
+                      itemBuilder: ((context, index) {
+                        if (querySnapshot.hasData) {
+                          final friendId =
+                              querySnapshot.data!.elementAt(index).uid;
+                          final friendData = context
+                              .read<FirestoreService>()
+                              .getSingleUser(user: friendId!);
+                          return FutureBuilder(
+                              future: friendData,
+                              builder: (context,
+                                  AsyncSnapshot<UserModel> userSnapshot) {
+                                if (userSnapshot.hasData) {
+                                  return Container(
+                                    margin: EdgeInsets.all(7),
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(25),
+                                      boxShadow: [box_shadow],
+                                      color: Colors.white,
+                                    ),
+                                    width: 120,
+                                    child: Column(children: [
+                                      SizedBox(height: 15),
+                                      Container(
+                                        child: CircleAvatar(
+                                          backgroundColor: blue1,
+                                          radius: 35,
+                                          backgroundImage: NetworkImage(
+                                              userSnapshot.data!.imageUrl!),
+                                        ),
+                                      ),
+                                      SizedBox(height: 5),
+                                      Text(userSnapshot.data!.firstName! +
+                                          " " +
+                                          userSnapshot.data!.lastName!),
+                                      Center(
+                                          child: Text(
+                                        querySnapshot.data!
+                                            .elementAt(index)
+                                            .type
+                                            .toString(),
+                                        style: TextStyle(color: Colors.black),
+                                      )),
+                                    ]),
+                                  );
+                                } else {
+                                  return Container();
+                                }
+                              });
+                        } else {
+                          return Container();
+                        }
+                      })),
+                );
+              } else {
+                return Container();
+              }
+            }));
+  }
+}
+
 class RecentActivities extends StatefulWidget {
   const RecentActivities({Key? key}) : super(key: key);
 
@@ -61,26 +151,19 @@ class RecentActivities extends StatefulWidget {
 }
 
 class _RecentActivitiesState extends State<RecentActivities> {
-  IconData setIcons(String type) {
-    if (type == "Tennis") return Icons.sports_tennis;
-    if (type == "Basketball") return Icons.sports_basketball;
-    if (type == "Soccer") return Icons.sports_soccer;
-    return Icons.sports;
-  }
-
   @override
   Widget build(BuildContext context) {
     final user = Provider.of<User?>(context, listen: false);
-
+    final size = MediaQuery.of(context).size.width;
     return Container(
-        height: 160,
+        height: 140,
         margin: EdgeInsets.symmetric(vertical: 15, horizontal: 15),
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           Container(
               margin: EdgeInsets.symmetric(horizontal: 15, vertical: 5),
               child: Text("Recent Activities")),
           Container(
-            height: 130,
+            height: size / 4.2,
             child: StreamBuilder(
               stream: FirebaseFirestore.instance
                   .collection('activities')
@@ -95,14 +178,13 @@ class _RecentActivitiesState extends State<RecentActivities> {
                         var sportIcon =
                             setIcons(snapshot.data!.docs[index]['type']);
                         return Container(
-                            width: 100,
+                            width: size / 5.1,
                             decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(25),
                                 color:
                                     Theme.of(context).scaffoldBackgroundColor,
                                 boxShadow: [box_shadow]),
                             margin: EdgeInsets.all(7),
-                            padding: EdgeInsets.all(10),
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.spaceAround,
                               children: [
@@ -110,16 +192,13 @@ class _RecentActivitiesState extends State<RecentActivities> {
                                   width: 50,
                                   height: 50,
                                   decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(25),
-                                      color: orange1),
+                                    borderRadius: BorderRadius.circular(25),
+                                  ),
                                   child: Icon(
                                     sportIcon,
-                                    size: 30,
-                                    color: Colors.white,
+                                    size: 50,
+                                    color: orange1,
                                   ),
-                                ),
-                                Text(
-                                  snapshot.data!.docs[index]["type"],
                                 ),
                               ],
                             ));
@@ -171,10 +250,12 @@ class BottomAppBarWidget extends StatelessWidget {
             ),
           ),
           IconButton(
-            onPressed: () {},
+            onPressed: () {
+              Navigator.pushNamed(context, '/followingList');
+            },
             iconSize: 27.0,
             icon: Icon(
-              Icons.call_made,
+              Icons.person,
             ),
           ),
           //to leave space in between the bottom app bar items and below the FAB
@@ -183,18 +264,20 @@ class BottomAppBarWidget extends StatelessWidget {
           ),
           IconButton(
             onPressed: () {
+              Navigator.pushNamed(context, '/chatUsers');
+            },
+            iconSize: 27.0,
+            icon: Icon(
+              Icons.chat,
+            ),
+          ),
+          IconButton(
+            onPressed: () {
               context.read<AuthService>().signOut();
             },
             iconSize: 27.0,
             icon: Icon(
-              Icons.call_received,
-            ),
-          ),
-          IconButton(
-            onPressed: () {},
-            iconSize: 27.0,
-            icon: Icon(
-              Icons.settings,
+              Icons.logout,
             ),
           ),
         ],

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import './theme.dart';
-import './authenticator.dart';
+import 'package:sports_buddy/theme.dart';
+import '/services/authenticator.dart';
 import 'package:provider/provider.dart';
 
 class SignInPage extends StatefulWidget {

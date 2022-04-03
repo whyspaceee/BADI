@@ -1,7 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:sports_buddy/firestore_service.dart';
-import '/authenticator.dart';
+import 'package:sports_buddy/services/firestore_service.dart';
+import '/services/authenticator.dart';
 import 'package:provider/provider.dart';
 
 class SignUpPage extends StatefulWidget {

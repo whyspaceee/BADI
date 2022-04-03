@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_google_places/flutter_google_places.dart';
@@ -67,7 +68,11 @@ class _AddActivityState extends State<AddActivity> {
             SizedBox(
               height: 25,
             ),
-            DropDownSports(dropdownValue: sportValue),
+            DropDownSportSelector(
+                sportValue,
+                (value) => {
+                      sportValue = value,
+                    }),
             Container(
               height: 260,
               margin: EdgeInsets.only(right: 20, left: 20, top: 20),
@@ -147,20 +152,21 @@ class _AddActivityState extends State<AddActivity> {
                   final user = Provider.of<User?>(context, listen: false);
                   GeoPoint geoPoint = GeoPoint(lat!, lng!);
                   FirebaseFirestore.instance.collection('activities').add({
-                    'type': "Other",
+                    'type': sportValue,
                     'position': geoPoint,
                     'uid': user!.uid,
                     'active': true,
                     'placeId': placeId,
                   });
-                  print('Created Activity');
+                  print('Created Activity ' + sportValue!);
                 },
                 child: Ink(
                     width: 250,
+                    height: 50,
                     padding: EdgeInsets.all(5),
                     child: Center(
                         child: Text(
-                      "Create new activity",
+                      "Add Activity",
                       style: TextStyle(
                           color: Colors.white,
                           fontSize: 18,
@@ -174,19 +180,13 @@ class _AddActivityState extends State<AddActivity> {
   }
 }
 
-class DropDownSports extends StatefulWidget {
-  String? dropdownValue;
-  DropDownSports({Key? key, required this.dropdownValue}) : super(key: key);
-
-  @override
-  State<DropDownSports> createState() => _DropDownSportsState();
-}
-
-class _DropDownSportsState extends State<DropDownSports> {
+class DropDownSportSelector extends StatelessWidget {
   String? sportsValue;
+  Function? func;
+  DropDownSportSelector(this.sportsValue, this.func);
+
   @override
   Widget build(BuildContext context) {
-    sportsValue = widget.dropdownValue;
     return Container(
         margin: EdgeInsets.only(right: 20, left: 20, top: 20),
         child: Column(
@@ -197,18 +197,18 @@ class _DropDownSportsState extends State<DropDownSports> {
             Container(
                 child: DropdownButtonFormField(
               icon: Icon(
-                Icons.arrow_drop_down,
-                color: Colors.white,
+                CupertinoIcons.arrow_down_circle,
+                color: blue1,
               ),
               decoration: InputDecoration(
                 border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
                     borderSide: BorderSide.none),
                 filled: true,
-                fillColor: orange1,
+                fillColor: gray1,
               ),
-              dropdownColor: orange1,
-              style: TextStyle(color: Colors.white),
+              dropdownColor: gray1,
+              style: TextStyle(color: Colors.black),
               items: <String>[
                 'Tennis',
                 'Swimming',
@@ -222,9 +222,8 @@ class _DropDownSportsState extends State<DropDownSports> {
                 );
               }).toList(),
               onChanged: (String? newValue) {
-                setState(() {
-                  widget.dropdownValue = newValue!;
-                });
+                sportsValue = newValue!;
+                func!(newValue);
               },
             ))
           ],
@@ -251,7 +250,7 @@ class _LocationSelectorState extends State<LocationSelector> {
   }
 
   void initgooglePlace() async {
-    String apiKey = 'AIzaSyCAcVbmPYxK36EfiIRT9emtRzgghXFwkkE';
+    String apiKey = dotenv.env['apiKey']!;
     googlePlace = GooglePlace(apiKey);
   }
 
@@ -328,53 +327,6 @@ class _LocationSelectorState extends State<LocationSelector> {
           ),
         ],
       ),
-    );
-  }
-}
-
-class AppDropdownInput<T> extends StatelessWidget {
-  final String hintText;
-  final List<T> options;
-  final T? value;
-  final String Function(T)? getLabel;
-  final void Function(T?)? onChanged;
-
-  AppDropdownInput({
-    this.hintText = 'Please select an Option',
-    this.options = const [],
-    this.getLabel,
-    this.value,
-    this.onChanged,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return FormField<T>(
-      builder: (FormFieldState<T> state) {
-        return InputDecorator(
-          decoration: InputDecoration(
-            contentPadding:
-                EdgeInsets.symmetric(horizontal: 20.0, vertical: 15.0),
-            labelText: hintText,
-            border:
-                OutlineInputBorder(borderRadius: BorderRadius.circular(5.0)),
-          ),
-          isEmpty: value == null || value == '',
-          child: DropdownButtonHideUnderline(
-            child: DropdownButton<T>(
-              value: value,
-              isDense: true,
-              onChanged: onChanged,
-              items: options.map((T value) {
-                return DropdownMenuItem<T>(
-                  value: value,
-                  child: Text(getLabel!(value)),
-                );
-              }).toList(),
-            ),
-          ),
-        );
-      },
     );
   }
 }

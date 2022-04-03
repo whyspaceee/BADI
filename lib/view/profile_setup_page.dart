@@ -5,10 +5,10 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
-import 'package:sports_buddy/firestore_service.dart';
-import 'package:sports_buddy/storage_service.dart';
+import 'package:sports_buddy/services/firestore_service.dart';
+import 'package:sports_buddy/services/storage_service.dart';
 import 'package:sports_buddy/theme.dart';
-import './authenticator.dart';
+import '/services/authenticator.dart';
 import 'package:image_cropper/image_cropper.dart';
 
 class ProfileSetupPage extends StatefulWidget {

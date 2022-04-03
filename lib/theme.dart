@@ -4,6 +4,8 @@ Color gray1 = Color.fromRGBO(235, 235, 235, 1);
 
 Color orange1 = Color.fromRGBO(243, 102, 52, 1);
 
+Color blue1 = Color.fromRGBO(119, 201, 228, 1);
+
 BoxShadow box_shadow = BoxShadow(
   blurRadius: 4,
   spreadRadius: 3,
