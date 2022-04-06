@@ -1,5 +1,5 @@
 # BADI
-![BADI](https://github.com/whyspaceee/BADI/blob/master/assets/logos/badi.png1)
+![BADI](https://raw.githubusercontent.com/whyspaceee/BADI/master/assets/logos/badi.png)
 
 An app to find sport partners near you, made for the 2022 Google Solution Challenge
 
